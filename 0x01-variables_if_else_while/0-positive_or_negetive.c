@@ -2,14 +2,11 @@
 #include <time.h>
 #include <stdio.h>
 /* more headers goes there */
-
-/* betty style doc for function goes there */
 /**
- * main - Entry point
+ * main - generates random numbers,delcares + OR -
  *
- * Return: 1, if successful
+ * Return: 1, if succesful
  */
-
 int main(void)
 {
 	int n;
@@ -17,14 +14,13 @@ int main(void)
 	/*code generates random number*/
 	srand(time(0));
 	n = rand() - RAND_MAX / 2;
-	/* your code goes there */
 	if (n > 0)
 	{
 		printf("%d is positive\n", n);
 	}
-        if (n < 0)
+	if (n < 0)
 	{
-		printf("%d is negetive\n", n);
+		printf("%d is negative\n", n);
 	}
 	if (n == 0)
 	{
