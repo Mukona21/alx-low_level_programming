@@ -1,20 +1,20 @@
 #include <stdio.h>
+#include <ctype.h>
 /**
- * main - Entry point
+ * main - prints single numbers of base1m
  *
- * Return: (Always 0 (success))
+ * Return: 0, if succesful
  */
-
 int main(void)
 {
-	int c;
+	/*
+	 * prints all single digits numbers 0f base 10,
+	 * starting from zero,only using put char,no char variables
+	 */
+	int x;
 
-	c = 0;
-	while
-		(c < 10) {
-			putchar(c + '0');
-			c++;
-		}
+	for (x = 0 ; x < 10 ; x++)
+		putchar((x % 10 + '0'));
 	putchar('\n');
-	return (0)
+	return (0);
 }
