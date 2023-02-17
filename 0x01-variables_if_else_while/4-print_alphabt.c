@@ -1,24 +1,19 @@
 #include <stdio.h>
-
+#include <ctype.h>
 /**
- * main - Entry point
+ * main - prints the alphabets in lower case,eclude e & q
  *
- * Return: Always 0 (Success)
+ * Return: O, if succesful
  */
 int main(void)
 {
-	char c;
+	char lc;
 
-	for (c = 'a'; c <= 'z'; c++)
+	for (lc = 'a' ; lc <= 'z' ; lc++)
 	{
-		putchar(c);
-	}
-
-	for (c = 'A'; c <= 'Z'; c++)
-	{
-		putchar(c);
+		if (lc != 'e' && lc != 'q')
+			putchar(lc);
 	}
 	putchar('\n');
-
 	return (0);
 }
