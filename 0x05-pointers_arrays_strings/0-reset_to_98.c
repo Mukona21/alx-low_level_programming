@@ -1,30 +1,12 @@
 #include "main.h"
+
 /**
- * _strcat - concatenates two strings
- * @dest: input value
- * @src: input value
- *
- * Return: void
+ * reset_to_98 - writes a function that points to an int and updates
+ *               the value of the address to 98.
+ * @n: The int declared varialble name
  */
-char *_strcat(char *dest, char *src)
+
+void reset_to_98(int *n)
 {
-	int i;
-	int j;
-
-	i = 0;
-	while (dest[i] != '\0')
-	{
-		i++;
-	}
-	j = 0;
-	while (src[j] != '\0')
-	{
-		dest[i] = src[j];
-		i++;
-		j++;
-	}
-
-	dest[i] = '\0';
-	return (dest);
+	*n = 98;
 }
-
