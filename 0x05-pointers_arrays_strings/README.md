@@ -10,7 +10,7 @@
 * How to use strings and how to manipulate them
 * Scope of variables
 
-# Technologies used
+## Technologies used
 
 * All files were compiled on Ubuntu 20.04 LTS using gcc, using the options -Wall -Werror -Wextra -pedantic -std=gnu89
 * code used the Betty style and checked using betty-style.pl and betty-doc.pl
