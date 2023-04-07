@@ -11,22 +11,15 @@ unsigned int binary_to_uint(const char *b)
 {
 	unsigned int decimal = 0, base = 1;
 	int i;
+	unsigned int dec_val = 0;
 
-	if (b == NULL)
+	if (!b)
 		return (0);
-
-	for (i = 0; b[i] != '\0'; i++)
-		;
-
-	for (i = i - 1; i >= 0; i--)
+	for (i = 0; b[i]; i++)
 	{
-		if (b[i] != '0' && b[i] != '1')
+		if (b[i] < '0' || b[i] > '1')
 			return (0);
-
-		decimal += (b[i] - '0') * base;
-		base *= 2;
+		dec_val = 2 * dec_val + (b[i] - '0');
 	}
-
-	return (decimal);
+	return (dec_val);
 }
-
