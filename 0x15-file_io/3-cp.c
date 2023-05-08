@@ -1,114 +1,104 @@
 #include "main.h"
 #include <stdio.h>
+#include <stdlib.h>
 
-int close_on_error(int file_descriptor);
-void read_on_error(char *file_name);
-void write_on_error(char *file_name);
+char *create_buffer(char *file);
+void close_file(int fd);
 
 /**
- *main - copies the content of a file to another file.
- *@argument_counter: argument counter.
- *@argument_vector: argument vector.
- *Return: always return 0, or exit.
+ * create_buffer - Allocates 1024 bytes for a buffer.
+ * @file: The name of the file buffer is storing chars for.
+ *
+ * Return: A pointer to the newly-allocated buffer.
  */
-int main(int argument_counter, char *argument_vector[])
-{
-	ssize_t counted_bytes = 1;
-	char buffer[1024];
-	int file_from, file_to;
 
-	/*check number of argument */
-	if (argument_counter != 3)
+char *create_buffer(char *file)
+{
+	char *buffer;
+
+	buffer = malloc(sizeof(char) * 1024);
+
+	if (buffer == NULL)
+	{
+		dprintf(STDERR_FILENO,
+			"Error: Can't write to %s\n", file);
+		exit(99);
+	}
+
+	return (buffer);
+}
+
+/**
+ * close_file - Closes file descriptors.
+ * @fd: The file descriptor to be closed.
+ */
+void close_file(int fd)
+{
+	int c;
+
+	c = close(fd);
+
+	if (c == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
+		exit(100);
+	}
+}
+
+/**
+ * main - Copies the contents of a file to another file.
+ * @argc: The number of arguments supplied to the program.
+ * @argv: An array of pointers to the arguments.
+ *
+ * Return: 0 on success.
+ *
+ * Description: If the argument count is incorrect - exit code 97.
+ *              If file_from does not exist or cannot be read - exit code 98.
+ *              If file_to cannot be created or written to - exit code 99.
+ *              If file_to or file_from cannot be closed - exit code 100.
+ */
+int main(int argc, char *argv[])
+{
+	int from, to, r, w;
+	char *buffer;
+
+	if (argc != 3)
 	{
 		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
 		exit(97);
 	}
 
-	/*open and check file_from */
-	file_from = open(argument_vector[1], O_RDONLY);
-	if (file_from < 0)
-	{
-		read_on_error(argument_vector[1]);
-		exit(98);
-	}
+	buffer = create_buffer(argv[2]);
+	from = open(argv[1], O_RDONLY);
+	r = read(from, buffer, 1024);
+	to = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0664);
 
-	/*open and check  file_to */
-	file_to = open(argument_vector[2], O_CREAT | O_WRONLY | O_TRUNC, 0664);
-	if (file_to < 0)
-	{
-		write_on_error(argument_vector[2]);
-		close_on_error(file_from);
-		exit(99);
-	}
-
-	/*copy content - loop checks end of file (file_from) */
-	while (counted_bytes)
-	{
-		/*read the next 1020 bytes in file_from and check read error */
-		counted_bytes = read(file_from, buffer, 1024);
-		if (counted_bytes < 0)
+	do {
+		if (from == -1 || r == -1)
 		{
-			read_on_error(argument_vector[1]);
-			close_on_error(file_from);
-			close_on_error(file_to);
+			dprintf(STDERR_FILENO,
+				"Error: Can't read from file %s\n", argv[1]);
+			free(buffer);
 			exit(98);
 		}
 
-		/*check buffer end of file */
-		if (counted_bytes == 0)
-			break;
-		/*write the output in file_to and check write error */
-		counted_bytes = write(file_to, buffer, counted_bytes);
-		if (counted_bytes < 0)
+		w = write(to, buffer, r);
+		if (to == -1 || w == -1)
 		{
-			write_on_error(argument_vector[2]);
-			close_on_error(file_from);
-			close_on_error(file_to);
+			dprintf(STDERR_FILENO,
+				"Error: Can't write to %s\n", argv[2]);
+			free(buffer);
 			exit(99);
 		}
-	}
 
-	/*close and check  file_from and file_to */
-	if (close_on_error(file_from) < 0)
-	{
-		close_on_error(file_to);
-		exit(100);
-	}
+		r = read(from, buffer, 1024);
+		to = open(argv[2], O_WRONLY | O_APPEND);
 
-	if (close_on_error(file_to) < 0)
-		exit(100);
+	} while (r > 0);
+
+	free(buffer);
+	close_file(from);
+	close_file(to);
+
 	return (0);
-}
-
-/**
- *close_on_error - close a file descriptor and check for a possible error.
- *@file_descriptor: file descriptor for file to be closed.
- *Return: 1 if file_descriptor colud be closeed, -1 if file_descriptor could not be closed.
- */
-int close_on_error(int file_descriptor)
-{
-	int close_output;
-
-	close_output = close(file_descriptor);
-	if (close_output < 0)
-		dprintf(STDERR_FILENO, "Error: Can't close file_descriptor %d\n", file_descriptor);
-	return (close_output);
-}
-
-/**
- *read_on_error - print the read error.
- *@file_name: file_name.
- */
-void read_on_error(char *file_name)
-{
-	dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", file_name);
-}
-
-/**
- *write_on_error - print the write error.
- *@file_name: file_name.
- */
-void write_on_error(char *file_name)
-{
-	dprintf(STDERR_FILENO, "Error: Can't write to %s\n", file_name);
 }
